@@ -1,8 +1,5 @@
-using System.Text.Json;
 using Flurl.Http;
 using Flurl;
-using Newtonsoft.Json.Linq;
-using Reqnroll.CommonModels;
 using RestfulBookerTests.Support.DTOs;
 
 namespace RestfulBookerTests.Support;
@@ -70,6 +67,23 @@ public class RestfulBookerClient
                 return request.WithHeader("Content-Type", "application/x-www-form-urlencoded");
             default:
                 throw new ArgumentOutOfRangeException();
+        }
+    }
+    
+    public async Task<Booking?> GetBooking(int id)
+    {
+        try
+        {
+            return await _baseUrl
+                .AppendPathSegment(_bookingsPath)
+                .AppendPathSegment(id.ToString())
+                .WithHeader("Accept", "application/json")
+                .GetJsonAsync<Booking>();
+        } catch (FlurlHttpException ex)
+        {
+            var err = await ex.GetResponseStringAsync();
+            Console.Write($"Error returned from {ex.Call.Request.Url}: {err}");
+            throw;
         }
     }
 }

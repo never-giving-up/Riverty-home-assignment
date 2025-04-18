@@ -23,28 +23,55 @@ public class RestfulBookerSteps(ScenarioContext scenarioContext)
         var requestBodyType = RequestBodyTypeHelper.FromString(encodingMethod);
         var bookingToCreate = CreateDefaultBooking();
         var result = await _restfulBookerClient!.CreateBooking(bookingToCreate, requestBodyType);
-        _scenarioContext["BookingToCreate"] = bookingToCreate;
-        _scenarioContext["BookingResponse"] = result.booking;
+        StoreBookingContext(bookingToCreate, result);
+    }
+
+    private void StoreBookingContext(Booking bookingToCreate, BookingResponseDTO result)
+    {
+        _scenarioContext[ScenarioContextKeys.BookingToCreate] = bookingToCreate;
+        _scenarioContext[ScenarioContextKeys.BookingResponse] = result.booking;
+        _scenarioContext[ScenarioContextKeys.CreatedBookingId] = result.bookingid;
+    }
+
+    [Given("we create a booking with the price (.*)")]
+    public async Task GivenWeCreateABookingWithThePrice(int price)
+    {
+        var bookingToCreate = CreateDefaultBooking();
+        // Another possible edge case is using decimals
+        // I'm not implementing this here for time considerations
+        bookingToCreate.totalprice = price;
+        var result = await _restfulBookerClient!.CreateBooking(bookingToCreate);
+        
+        StoreBookingContext(bookingToCreate, result);
     }
     
     [Then("the booking from the result is identical to the one we created")]
     public void ThenTheBookingFromTheResultIsIdenticalToTheOneWeCreated()
     {
-        var bookingToCreate = _scenarioContext["BookingToCreate"] as Booking;
-        var bookingResponse = _scenarioContext["BookingResponse"] as Booking;
+        var bookingToCreate = _scenarioContext[ScenarioContextKeys.BookingToCreate] as Booking;
+        var bookingResponse = _scenarioContext[ScenarioContextKeys.BookingResponse] as Booking;
         
         bookingToCreate.Should().NotBeNull();
         bookingResponse.Should().NotBeNull();
-        AssertBookingsAreIdentical(bookingToCreate, bookingResponse);
+        AreBookingsIdentical(bookingToCreate, bookingResponse)
+            .Should().BeTrue();
     }
 
-    private static void AssertBookingsAreIdentical(Booking booking1, Booking booking2)
+    private static bool AreBookingsIdentical(Booking? booking1, Booking? booking2)
     {
-        booking1.Should().NotBeNull();
-        booking2.Should().NotBeNull();
+        if (booking1 == null || booking2 == null)
+            return false;
 
-        booking1.Should().BeEquivalentTo(booking2, options => options
-            .IncludingAllRuntimeProperties());
+        try
+        {
+            booking1.Should().BeEquivalentTo(booking2, options => options
+                .IncludingAllRuntimeProperties());
+            return true;
+        }
+        catch (FluentAssertions.Execution.AssertionFailedException)
+        {
+            return false;
+        }
     }
 
     private static Booking CreateDefaultBooking()
@@ -64,4 +91,36 @@ public class RestfulBookerSteps(ScenarioContext scenarioContext)
         return booking;
     }
 
+    [Then("the booking should not succeed")]
+    public void ThenTheBookingShouldNotSucceed()
+    {
+        var bookingToCreate = _scenarioContext[ScenarioContextKeys.BookingToCreate] as Booking;
+        var bookingResponse = _scenarioContext[ScenarioContextKeys.BookingResponse] as Booking;
+        
+        if(bookingToCreate != null && bookingResponse != null)
+            AreBookingsIdentical(bookingToCreate, bookingResponse)
+                .Should().BeFalse();
+    }
+
+    [Then("we can retrieve the booking from the server")]
+    public async Task ThenWeCanRetrieveTheBookingFromTheServer()
+    {
+        var originalBooking = _scenarioContext[ScenarioContextKeys.BookingToCreate] as Booking;
+        var bookingFromOriginalCreateRequest = _scenarioContext[ScenarioContextKeys.BookingResponse] as Booking;
+        var createdBookingId = (int)_scenarioContext[ScenarioContextKeys.CreatedBookingId]!; // Since int is a primitive type, we need to cast it directly, instead of using the as operator
+        
+        // createdBookingId.Should().NotBeNull();
+        bookingFromOriginalCreateRequest.Should().NotBeNull();
+        var bookingFromServer = await _restfulBookerClient!.GetBooking(createdBookingId);
+
+        AreBookingsIdentical(originalBooking, bookingFromServer).Should().BeTrue();
+        AreBookingsIdentical(bookingFromOriginalCreateRequest, bookingFromServer).Should().BeTrue();
+    }
+}
+
+public static class ScenarioContextKeys
+{
+    public const string BookingToCreate = "BookingToCreate";
+    public const string BookingResponse = "BookingResponse";
+    public const string CreatedBookingId = "CreatedBookingId";
 }
