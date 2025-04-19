@@ -17,5 +17,5 @@ jobs:
           ls ${{ github.workspace }}
       - name: Run tests
         run: |
-          cd RestfulBookerTests && docker build -t test-runner:latest . && docker run -v $(pwd)/output:/app/test-results test-runner:latest 
+          cd RestfulBookerTests && docker build -t test-runner:latest . && docker run test-runner:latest 
       - run: echo "🍏 This job's status is ${{ job.status }}."
