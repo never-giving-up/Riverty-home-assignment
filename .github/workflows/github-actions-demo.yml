@@ -1,6 +1,22 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
-runs:
-  using: 'docker'
-  image: 'RestfulBookerTests/Dockerfile'
+
+jobs:
+  run_application_in_container:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image from Dockerfile
+        run: |
+          echo "Building the Docker image..."
+          docker build -t eden-tests ./RestfulBookerTests
+
+      - name: Run the container (executes the ENTRYPOINT/CMD)
+        run: |
+          echo "Running the container..."
+          docker run --rm eden-tests
+          echo "Container finished."
