@@ -1,0 +1,11 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Running the tests now
+        run: |
+          cd RestfulBookerTests && dotnet build && dotnet test
+      - run: echo "🍏 This job's status is ${{ job.status }}."
