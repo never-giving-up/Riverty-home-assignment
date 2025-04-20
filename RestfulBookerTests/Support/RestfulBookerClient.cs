@@ -108,4 +108,33 @@ public class RestfulBookerClient
             .WithHeader("Accept", "application/json")
             .GetJsonAsync<List<BookingId>>();
     }
+
+    public async Task<List<BookingId>> GetBookingIdsByBookingDates(string? checkin, string? checkout)
+    {
+        var url = _baseUrl.AppendPathSegment(_bookingsPath);
+        if (checkin != null)
+            url.AppendQueryParam("checkin", checkin);
+        if (checkout != null)
+            url.AppendQueryParam("checkout", checkout);
+        
+        return await url
+            .WithHeader("Accept", "application/json")
+            .GetJsonAsync<List<BookingId>>();
+    }
+
+    public async Task<Booking> UpdateBooking(Booking newBooking, int originalBookingId, RequestBodyType requestBodyType = RequestBodyType.Json)
+    {
+       var url = _baseUrl.AppendPathSegment(_bookingsPath).AppendPathSegment(originalBookingId.ToString()); 
+       var request = AddContentTypeHeader(url, requestBodyType);
+       request = AddAuthToken(request);
+       request = request.WithHeader("Accept", "application/json");
+       
+       var requestBody = new RequestBodySerializer().Serialize(newBooking, requestBodyType);
+       return await request.PutStringAsync(requestBody).ReceiveJson<Booking>();
+    }
+
+    private IFlurlRequest AddAuthToken(IFlurlRequest request)
+    {
+        return request.WithHeader("Cookie", $"token={_token}");
+    }
 }

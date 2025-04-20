@@ -239,7 +239,8 @@ this.ScenarioInitialize(scenarioInfo);
         [Xunit.InlineDataAttribute("sally", "onally", new string[0])]
         [Xunit.InlineDataAttribute("Jon", "Øberg", new string[0])]
         [Xunit.InlineDataAttribute("", "", new string[0])]
-        [Xunit.InlineDataAttribute("1234åøæ", "!!\n", new string[0])]
+        [Xunit.InlineDataAttribute("only-firstname", "", new string[0])]
+        [Xunit.InlineDataAttribute("", "only-lastname", new string[0])]
         public async System.Threading.Tasks.Task WeCanGetBookingsByName(string first, string last, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
@@ -258,10 +259,140 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 await this.ScenarioStartAsync();
 #line 52
-    await testRunner.GivenAsync(string.Format("we create a booking using the first name {0} and the last name {1}", first, last), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+    await testRunner.GivenAsync(string.Format("we create a booking using the first name {0} and the last name {1} and encoding m" +
+                            "ethod json", first, last), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 53
     await testRunner.ThenAsync("we can retrieve the booking from the server using the name filtering", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [Xunit.SkippableTheoryAttribute(DisplayName="We can get bookings by check in and check out dates")]
+        [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
+        [Xunit.TraitAttribute("Description", "We can get bookings by check in and check out dates")]
+        [Xunit.InlineDataAttribute("1993-01-01", "1995-02-02", new string[0])]
+        [Xunit.InlineDataAttribute("1990-02-08", "2003-03-09", new string[0])]
+        public async System.Threading.Tasks.Task WeCanGetBookingsByCheckInAndCheckOutDates(string checkin, string checkout, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("checkin", checkin);
+            argumentsOfScenario.Add("checkout", checkout);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("We can get bookings by check in and check out dates", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 64
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 65
+    await testRunner.GivenAsync(string.Format("we create a booking using the checkin date {0} and the checkout date {1}", checkin, checkout), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 66
+    await testRunner.ThenAsync("we can retrieve the booking from the server using the date filtering", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="We can get bookings by check in date")]
+        [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
+        [Xunit.TraitAttribute("Description", "We can get bookings by check in date")]
+        public async System.Threading.Tasks.Task WeCanGetBookingsByCheckInDate()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("We can get bookings by check in date", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 73
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 74
+    await testRunner.GivenAsync("we create a booking using the checkin date 2099-04-02 and the checkout date 2100-" +
+                        "02-05", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 75
+    await testRunner.ThenAsync("we can retrieve the booking from the server using the checkin date filtering", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="We can get bookings by check out date")]
+        [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
+        [Xunit.TraitAttribute("Description", "We can get bookings by check out date")]
+        public async System.Threading.Tasks.Task WeCanGetBookingsByCheckOutDate()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("We can get bookings by check out date", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 77
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 78
+    await testRunner.GivenAsync("we create a booking using the checkin date 2099-01-02 and the checkout date 2100-" +
+                        "02-05", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 79
+    await testRunner.ThenAsync("we can retrieve the booking from the server using the checkout date filtering", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [Xunit.SkippableTheoryAttribute(DisplayName="We can update a booking")]
+        [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
+        [Xunit.TraitAttribute("Description", "We can update a booking")]
+        [Xunit.InlineDataAttribute("Jane", "Jennifer", "Doe", "json", new string[0])]
+        [Xunit.InlineDataAttribute("Shenlock", "Sherlock", "Holmes", "xml", new string[0])]
+        [Xunit.InlineDataAttribute("Jean-lock", "Jean-luc", "Picard", "urlEncoded", new string[0])]
+        public async System.Threading.Tasks.Task WeCanUpdateABooking(string first, string new_First, string last, string method, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("first", first);
+            argumentsOfScenario.Add("new-first", new_First);
+            argumentsOfScenario.Add("last", last);
+            argumentsOfScenario.Add("method", method);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("We can update a booking", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 81
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 82
+    await testRunner.GivenAsync(string.Format("we create a booking using the first name {0} and the last name {1} and encoding m" +
+                            "ethod {2}", first, last, method), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 83
+    await testRunner.WhenAsync(string.Format("we update the first name to {0} using the encoding method {1}", new_First, method), ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 84
+    await testRunner.ThenAsync("the booking from the result is identical to the one we created", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

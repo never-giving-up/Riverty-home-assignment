@@ -49,13 +49,44 @@ Scenario Outline: Can create a booking without the accept header
     | urlEncoded |
 
 Scenario Outline: We can get bookings by name
-    Given we create a booking using the first name <first> and the last name <last>
+    Given we create a booking using the first name <first> and the last name <last> and encoding method json
     Then we can retrieve the booking from the server using the name filtering
     
     Examples: 
-        | first   | last   |
-        | sally   | onally |
-        | Jon     | Øberg  |
-        |         |        |
-        | 1234åøæ | !!\n   |
+        | first          | last          |
+        | sally          | onally        |
+        | Jon            | Øberg         |
+        |                |               |
+        | only-firstname |               |
+        |                | only-lastname |
         
+
+Scenario Outline: We can get bookings by check in and check out dates
+    Given we create a booking using the checkin date <checkin> and the checkout date <checkout>
+    Then we can retrieve the booking from the server using the date filtering
+    
+    Examples: 
+    | checkin    | checkout   |
+    | 1993-01-01 | 1995-02-02 |
+    | 1990-02-08 | 2003-03-09 |
+
+Scenario: We can get bookings by check in date
+    Given we create a booking using the checkin date 2099-04-02 and the checkout date 2100-02-05
+    Then we can retrieve the booking from the server using the checkin date filtering
+    
+Scenario: We can get bookings by check out date
+    Given we create a booking using the checkin date 2099-01-02 and the checkout date 2100-02-05
+    Then we can retrieve the booking from the server using the checkout date filtering
+
+Scenario: We can update a booking
+    Given we create a booking using the first name <first> and the last name <last> and encoding method <method>
+    When we update the first name to <new-first> using the encoding method <method>
+    Then the booking from the result is identical to the one we created
+
+    Examples:
+      | first     | new-first | last   | method     |
+      | Jane      | Jennifer  | Doe    | json       |
+      | Shenlock  | Sherlock  | Holmes | xml        |
+      | Jean-lock | Jean-luc  | Picard | urlEncoded |
+    
+    
