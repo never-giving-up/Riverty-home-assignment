@@ -4,6 +4,8 @@ This repo is for the home assignment from Riverty
 This repo uses the Fluent Assertions package. According to its license, it's free for non-commercial use and since this is a home task, I don't mind using it.
 Due to time restrictions, I didn't get to create a proper logging utility that will let me use debug/info/exception/etc. logs that will show on the console and be written to a file.
 
+*Note: I had to target NET8.0 instead of NET9.0 for this repo in order to run the code on github actions
+
 # Bugs I found
 1. You can create a booking with a negative total price
 2. The server returns a 418 (I'm a teapot) response when trying to create bookings without adding the Accept header to the request
