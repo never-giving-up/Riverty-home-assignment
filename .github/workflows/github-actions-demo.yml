@@ -9,5 +9,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Running the tests now
         run: |
-          cd RestfulBookerTests && dotnet build && dotnet test
+          cd RestfulBookerTests && dotnet build && dotnet test --logger "trx"
+
+      - name: Publish results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Test results
+          path: RestfulBookerTests/TestResults
+          retention-days: 7
       - run: echo "🍏 This job's status is ${{ job.status }}."
