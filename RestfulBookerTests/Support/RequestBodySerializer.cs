@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 using RestfulBookerTests.Support.DTOs;
@@ -13,17 +15,13 @@ public class RequestBodySerializer
     
     public string Serialize(object body, RequestBodyType type)
     {
-        switch (type)
+        return type switch
         {
-            case RequestBodyType.Json:
-                return JsonSerializer.Serialize(body);
-            case RequestBodyType.Xml:
-                return SerializeIntoXml(body);
-            case RequestBodyType.UrlEncodedForm:
-                return SerializeToUrlEncodedForm(body);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
-        }
+            RequestBodyType.Json => JsonSerializer.Serialize(body),
+            RequestBodyType.Xml => SerializeIntoXml(body),
+            RequestBodyType.UrlEncodedForm => SerializeToUrlEncodedForm(body),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
     }
 
     private static string SerializeToUrlEncodedForm(object body)

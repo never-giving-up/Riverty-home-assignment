@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Flurl.Http;
 using Flurl;
 using RestfulBookerTests.Support.DTOs;
@@ -35,14 +37,28 @@ public class RestfulBookerClient
             .ReceiveJson<AuthTokenDTO>();
     }
 
-    public async Task<BookingResponseDTO> CreateBooking(Booking booking, RequestBodyType bodyType = RequestBodyType.Json)
+    public async Task<BookingResponseDTO?> CreateBooking(Booking booking,
+        RequestBodyType requestBodyType = RequestBodyType.Json)
+    {
+        return await CreateBooking(booking, requestBodyType, includeAcceptHeader: true);
+    }
+
+    public async Task<BookingResponseDTO?> CreateBookingWithoutAcceptHeader(Booking booking,
+        RequestBodyType requestBodyType = RequestBodyType.Json)
+    {
+        return await CreateBooking(booking, requestBodyType, includeAcceptHeader: false);
+    }
+
+    private async Task<BookingResponseDTO?> CreateBooking(Booking booking,
+        RequestBodyType bodyType, bool includeAcceptHeader = true)
     {
         try
         {
-            var request = _baseUrl
-                .AppendPathSegment(_bookingsPath)
-                .WithHeader("Accept", "application/json");
-            request = AddContentTypeHeader(request, bodyType);
+            var requestUrl = _baseUrl
+                .AppendPathSegment(_bookingsPath);
+            var request = AddContentTypeHeader(requestUrl, bodyType);
+            if (includeAcceptHeader)
+                request = request.WithHeader("Accept", "application/json");
             var requestBody = new RequestBodySerializer().Serialize(booking, bodyType);
             return await request.PostStringAsync(requestBody).ReceiveJson<BookingResponseDTO>();
         }
@@ -54,20 +70,16 @@ public class RestfulBookerClient
 
         return null;
     }
-    
-    private IFlurlRequest AddContentTypeHeader(IFlurlRequest request, RequestBodyType bodyType)
+
+    private IFlurlRequest AddContentTypeHeader(Url? url, RequestBodyType bodyType)
     {
-        switch (bodyType)
+        return bodyType switch
         {
-            case RequestBodyType.Json:
-                return request.WithHeader("Content-Type", "application/json");
-            case RequestBodyType.Xml:
-                return request.WithHeader("Content-Type", "text/xml");
-            case RequestBodyType.UrlEncodedForm:
-                return request.WithHeader("Content-Type", "application/x-www-form-urlencoded");
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+            RequestBodyType.Json => url.WithHeader("Content-Type", "application/json"),
+            RequestBodyType.Xml => url.WithHeader("Content-Type", "text/xml"),
+            RequestBodyType.UrlEncodedForm => url.WithHeader("Content-Type", "application/x-www-form-urlencoded"),
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
     
     public async Task<Booking?> GetBooking(int id)
@@ -85,5 +97,15 @@ public class RestfulBookerClient
             Console.Write($"Error returned from {ex.Call.Request.Url}: {err}");
             throw;
         }
+    }
+
+    public async Task<List<BookingId>> GetBookingIdsByName(string firstName, string lastName)
+    {
+        return await _baseUrl
+            .AppendPathSegment(_bookingsPath)
+            .AppendQueryParam("firstname", firstName)
+            .AppendQueryParam("lastname", lastName)
+            .WithHeader("Accept", "application/json")
+            .GetJsonAsync<List<BookingId>>();
     }
 }

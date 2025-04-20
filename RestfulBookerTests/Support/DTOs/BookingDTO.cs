@@ -19,7 +19,7 @@ public class Booking
     [XmlElement("lastname")]
     public string lastname { get; set; }
     [XmlElement("totalprice")]
-    public int totalprice { get; set; }
+    public double totalprice { get; set; }
     [XmlElement("depositpaid")]
     public bool depositpaid { get; set; }
     [XmlElement("bookingdates")]

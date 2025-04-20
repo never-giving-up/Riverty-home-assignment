@@ -131,8 +131,11 @@ this.ScenarioInitialize(scenarioInfo);
         [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
         [Xunit.TraitAttribute("Description", "Can create a booking with different prices")]
         [Xunit.InlineDataAttribute("0", new string[0])]
+        [Xunit.InlineDataAttribute("10.5", new string[0])]
+        [Xunit.InlineDataAttribute("100.0001", new string[0])]
         [Xunit.InlineDataAttribute("100", new string[0])]
         [Xunit.InlineDataAttribute("100000", new string[0])]
+        [Xunit.InlineDataAttribute("2147483646.9", new string[0])]
         [Xunit.InlineDataAttribute("2147483647", new string[0])]
         public async System.Threading.Tasks.Task CanCreateABookingWithDifferentPrices(string price, string[] exampleTags)
         {
@@ -167,7 +170,9 @@ this.ScenarioInitialize(scenarioInfo);
         [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
         [Xunit.TraitAttribute("Description", "Cannot create a booking with a negative price")]
         [Xunit.InlineDataAttribute("-1", new string[0])]
-        [Xunit.InlineDataAttribute("-50", new string[0])]
+        [Xunit.InlineDataAttribute("-3.75", new string[0])]
+        [Xunit.InlineDataAttribute("-50.32334", new string[0])]
+        [Xunit.InlineDataAttribute("-300", new string[0])]
         [Xunit.InlineDataAttribute("-2147483648", new string[0])]
         public async System.Threading.Tasks.Task CannotCreateABookingWithANegativePrice(string price, string[] exampleTags)
         {
@@ -175,7 +180,7 @@ this.ScenarioInitialize(scenarioInfo);
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             argumentsOfScenario.Add("price", price);
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Cannot create a booking with a negative price", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 26
+#line 29
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -185,11 +190,78 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 27
+#line 30
     await testRunner.GivenAsync(string.Format("we create a booking with the price {0}", price), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 28
+#line 31
     await testRunner.ThenAsync("the booking should not succeed", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [Xunit.SkippableTheoryAttribute(DisplayName="Can create a booking without the accept header")]
+        [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
+        [Xunit.TraitAttribute("Description", "Can create a booking without the accept header")]
+        [Xunit.InlineDataAttribute("json", new string[0])]
+        [Xunit.InlineDataAttribute("xml", new string[0])]
+        [Xunit.InlineDataAttribute("urlEncoded", new string[0])]
+        public async System.Threading.Tasks.Task CanCreateABookingWithoutTheAcceptHeader(string method, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("method", method);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Can create a booking without the accept header", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 41
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 42
+    await testRunner.GivenAsync(string.Format("we create a booking without adding the accept header and using the encoding metho" +
+                            "d {0}", method), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 43
+    await testRunner.ThenAsync("the booking from the result is identical to the one we created", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [Xunit.SkippableTheoryAttribute(DisplayName="We can get bookings by name")]
+        [Xunit.TraitAttribute("FeatureTitle", "Restful booker")]
+        [Xunit.TraitAttribute("Description", "We can get bookings by name")]
+        [Xunit.InlineDataAttribute("sally", "onally", new string[0])]
+        [Xunit.InlineDataAttribute("Jon", "Øberg", new string[0])]
+        [Xunit.InlineDataAttribute("", "", new string[0])]
+        [Xunit.InlineDataAttribute("1234åøæ", "!!\n", new string[0])]
+        public async System.Threading.Tasks.Task WeCanGetBookingsByName(string first, string last, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("first", first);
+            argumentsOfScenario.Add("last", last);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("We can get bookings by name", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 51
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 52
+    await testRunner.GivenAsync(string.Format("we create a booking using the first name {0} and the last name {1}", first, last), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 53
+    await testRunner.ThenAsync("we can retrieve the booking from the server using the name filtering", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

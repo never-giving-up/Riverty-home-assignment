@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FluentAssertions;
 using Reqnroll;
 using RestfulBookerTests.Support;
@@ -18,7 +19,7 @@ public class RestfulBookerSteps(ScenarioContext scenarioContext)
     }
     
     [Given("we create a booking using the encoding method (.*)")]
-    public async Task GivenWeCreateABooking(string encodingMethod)
+    public async Task GivenWeCreateABookingUsingTheEncodingMethod(string encodingMethod)
     {
         var requestBodyType = RequestBodyTypeHelper.FromString(encodingMethod);
         var bookingToCreate = CreateDefaultBooking();
@@ -34,15 +35,13 @@ public class RestfulBookerSteps(ScenarioContext scenarioContext)
     }
 
     [Given("we create a booking with the price (.*)")]
-    public async Task GivenWeCreateABookingWithThePrice(int price)
+    public async Task GivenWeCreateABookingWithThePrice(double price)
     {
         var bookingToCreate = CreateDefaultBooking();
-        // Another possible edge case is using decimals
-        // I'm not implementing this here for time considerations
         bookingToCreate.totalprice = price;
         var result = await _restfulBookerClient!.CreateBooking(bookingToCreate);
         
-        StoreBookingContext(bookingToCreate, result);
+        StoreBookingContext(bookingToCreate, result!);
     }
     
     [Then("the booking from the result is identical to the one we created")]
@@ -109,12 +108,47 @@ public class RestfulBookerSteps(ScenarioContext scenarioContext)
         var bookingFromOriginalCreateRequest = _scenarioContext[ScenarioContextKeys.BookingResponse] as Booking;
         var createdBookingId = (int)_scenarioContext[ScenarioContextKeys.CreatedBookingId]!; // Since int is a primitive type, we need to cast it directly, instead of using the as operator
         
-        // createdBookingId.Should().NotBeNull();
         bookingFromOriginalCreateRequest.Should().NotBeNull();
         var bookingFromServer = await _restfulBookerClient!.GetBooking(createdBookingId);
 
         AreBookingsIdentical(originalBooking, bookingFromServer).Should().BeTrue();
         AreBookingsIdentical(bookingFromOriginalCreateRequest, bookingFromServer).Should().BeTrue();
+    }
+
+    [Given("we create a booking without adding the accept header and using the encoding method (.*)")]
+    public async Task GivenWeCreateABookingWithoutAddingTheAcceptHeaderAndUsingTheEncodingMethod(string encodingMethod)
+    {
+        var requestBodyType = RequestBodyTypeHelper.FromString(encodingMethod);
+        var bookingToCreate = CreateDefaultBooking();
+        var result = await _restfulBookerClient!.CreateBookingWithoutAcceptHeader(bookingToCreate, requestBodyType);
+        StoreBookingContext(bookingToCreate, result!);
+    }
+
+    [Given("we create a booking using the first name (.*) and the last name (.*)")]
+    public async Task GivenWeCreateABookingUsingTheFirstNameAndTheLastName(string first, string last)
+    {
+        var bookingToCreate = CreateDefaultBooking();
+        bookingToCreate.firstname = first;
+        bookingToCreate.lastname = last;
+        
+        var result = await _restfulBookerClient!.CreateBooking(bookingToCreate);
+        StoreBookingContext(bookingToCreate, result!);
+    }
+
+    [Then("we can retrieve the booking from the server using the name filtering")]
+    public async Task ThenWeCanRetrieveTheBookingFromTheServerUsingTheNameFiltering()
+    {
+        var originalBooking = _scenarioContext[ScenarioContextKeys.BookingToCreate] as Booking;
+        var createdBookingId = (int) _scenarioContext[ScenarioContextKeys.CreatedBookingId];
+        
+        originalBooking.Should().NotBeNull();
+        var originalBookingFirstName = originalBooking.firstname;
+        var originalBookingLastName = originalBooking.lastname;
+
+        var bookingIdsFromServer = await _restfulBookerClient!.GetBookingIdsByName(originalBookingFirstName,
+            originalBookingLastName);
+        
+        bookingIdsFromServer.Any(booking => booking.bookingid == createdBookingId).Should().BeTrue();
     }
 }
 

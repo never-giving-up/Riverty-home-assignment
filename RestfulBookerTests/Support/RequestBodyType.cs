@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace RestfulBookerTests.Support;
 
 public enum RequestBodyType
